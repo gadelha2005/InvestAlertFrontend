@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
   Bell,
   CircleAlert,
-  LogOut,
   TrendingDown,
   TrendingUp,
   Wallet,
@@ -13,8 +11,8 @@ import { dashboardApi } from '@/api/dashboard'
 import { formatarData, formatarMoeda, formatarPercentual } from '@/api/format'
 import { notificacoesApi } from '@/api/notificacoes'
 import StatCard from '@/components/dashboard/StatCard'
+import AppLayout from '@/components/layout/AppLayout'
 import Button from '@/components/ui/Button'
-import { useAuthStore } from '@/store/authStore'
 import type { AlertaResponse, DashboardResponse, ErrorResponse, NotificacaoResponse } from '@/types'
 import './Dashboard.css'
 
@@ -33,8 +31,6 @@ const getVariationTone = (value?: number | null) => {
 }
 
 export default function Dashboard() {
-  const navigate = useNavigate()
-  const { usuario, logout } = useAuthStore()
   const [data, setData] = useState<DashboardState>({
     dashboard: null,
     notificacoes: [],
@@ -73,27 +69,22 @@ export default function Dashboard() {
     void carregarDashboard()
   }, [])
 
-  const handleLogout = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
-
   if (isLoading) {
     return (
-      <div className="dashboard-page">
+      <AppLayout>
         <div className="dashboard-status">
           <h1 className="dashboard-status__title">Carregando dashboard</h1>
           <p className="dashboard-status__description">
             Estamos buscando os dados mais recentes da sua carteira, metas e notificacoes.
           </p>
         </div>
-      </div>
+      </AppLayout>
     )
   }
 
   if (errorMessage || !data.dashboard) {
     return (
-      <div className="dashboard-page">
+      <AppLayout>
         <div className="dashboard-status">
           <h1 className="dashboard-status__title">Nao foi possivel abrir o dashboard</h1>
           <p className="dashboard-status__description">
@@ -105,7 +96,7 @@ export default function Dashboard() {
             </Button>
           </div>
         </div>
-      </div>
+      </AppLayout>
     )
   }
 
@@ -118,32 +109,8 @@ export default function Dashboard() {
   const lucroPrejuizo = dashboard.lucroPrejuizoTotal
 
   return (
-    <main className="dashboard-page">
-      <div className="dashboard-page__inner">
-        <div className="dashboard-page__topbar">
-          <div className="dashboard-page__brand">
-            <div className="dashboard-page__brand-badge">
-              <Wallet size={18} />
-              InvestAlert
-            </div>
-          </div>
-
-          <div className="dashboard-page__user">
-            <div className="dashboard-page__user-info">
-              <p className="dashboard-page__user-name">
-                {usuario?.nome || 'Investidor'}
-              </p>
-              <p className="dashboard-page__user-email">
-                {usuario?.email || 'Sessao autenticada'}
-              </p>
-            </div>
-            <Button className="dashboard-page__logout" onClick={handleLogout}>
-              <LogOut size={16} />
-              Sair
-            </Button>
-          </div>
-        </div>
-
+    <AppLayout>
+      <div className="dashboard-page">
         <section className="dashboard-page__hero">
           <div>
             <h1 className="dashboard-page__hero-title">Dashboard</h1>
@@ -381,6 +348,6 @@ export default function Dashboard() {
           </section>
         </div>
       </div>
-    </main>
+    </AppLayout>
   )
 }
