@@ -4,6 +4,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import {
   Bell,
   LayoutDashboard,
+  LineChart,
   LogOut,
   Menu,
   Target,
@@ -24,6 +25,11 @@ const navItems = [
     to: '/dashboard',
     label: 'Dashboard',
     icon: LayoutDashboard,
+  },
+  {
+    to: '/ativos',
+    label: 'Ativos',
+    icon: LineChart,
   },
   {
     to: '/carteira',

@@ -3,6 +3,7 @@ import { useAuthStore } from '@/store/authStore'
 import Login from '@/pages/Login'
 import Cadastro from '@/pages/Cadastro'
 import Dashboard from '@/pages/Dashboard'
+import Ativos from '@/pages/Ativos'
 import Carteira from '@/pages/Carteira'
 import Alertas from '@/pages/Alertas'
 import Metas from '@/pages/Metas'
@@ -37,6 +38,9 @@ export default function AppRoutes() {
         {/* Rotas privadas */}
         <Route path="/dashboard" element={
           <PrivateRoute><Dashboard /></PrivateRoute>
+        } />
+        <Route path="/ativos" element={
+          <PrivateRoute><Ativos /></PrivateRoute>
         } />
         <Route path="/carteira" element={
           <PrivateRoute><Carteira /></PrivateRoute>

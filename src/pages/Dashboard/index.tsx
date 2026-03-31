@@ -115,7 +115,7 @@ export default function Dashboard() {
           <div>
             <h1 className="dashboard-page__hero-title">Dashboard</h1>
             <p className="dashboard-page__hero-description">
-              Uma visao central da sua carteira, alertas e metas com dados reais do seu backend.
+              Uma visao central da sua carteira, alertas e metas.
             </p>
           </div>
           <div className="dashboard-page__hero-pill">

@@ -54,21 +54,26 @@ export interface CarteiraRequest {
 
 export interface CarteiraAtivoRequest {
   ticker: string
-  quantidade: number
-  precoMedio: number
+  quantidade?: number
+  valor?: number
+  precoMedio?: number
 }
 
 export interface CarteiraAtivoResponse {
   id: number
+  ativoId?: number
   ticker: string
   nomeAtivo?: string
   quantidade: number
   precoMedio: number
+  valor?: number
   precoAtual?: number
   valorInvestido: number
   valorAtual?: number
   lucroPrejuizo?: number
+  variacao?: number
   variacaoPercentual?: number
+  percentualVariacao?: number
   dataCompra: string
 }
 
