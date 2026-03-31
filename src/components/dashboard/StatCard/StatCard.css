@@ -1,0 +1,71 @@
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(2, 6, 23, 0.9) 100%);
+  box-shadow: 0 22px 40px rgba(2, 6, 23, 0.18);
+}
+
+.stat-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -24px -28px auto;
+  width: 112px;
+  height: 112px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.08);
+  filter: blur(10px);
+}
+
+.stat-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.stat-card__label {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.stat-card__icon-box {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: rgba(34, 211, 238, 0.12);
+  color: #67e8f9;
+}
+
+.stat-card__value {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 1.85rem;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+}
+
+.stat-card__meta {
+  margin-top: 12px;
+  font-size: 0.92rem;
+  color: #cbd5e1;
+}
+
+.stat-card__meta--positive {
+  color: #86efac;
+}
+
+.stat-card__meta--negative {
+  color: #fca5a5;
+}

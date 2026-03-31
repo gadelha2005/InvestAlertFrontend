@@ -2,12 +2,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   width: 100%;
   min-height: 48px;
   padding: 0 18px;
   border: 0;
   border-radius: 18px;
-  background: linear-gradient(135deg, #67e8f9 0%, #22d3ee 100%);
+  background: linear-gradient(135deg, #26bdd1 0%, #22d3ee 100%);
   color: #082f49;
   font-size: 0.96rem;
   font-weight: 700;
@@ -22,7 +23,7 @@
 }
 
 .button:focus-visible {
-  outline: 2px solid rgba(103, 232, 249, 0.8);
+  outline: 2px solid rgba(57, 167, 182, 0.8);
   outline-offset: 3px;
 }
 

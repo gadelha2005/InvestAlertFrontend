@@ -2,6 +2,13 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { LoginResponse } from '@/types'
 
+export const AUTH_STORAGE_KEY = 'investalert-auth'
+
+export const clearAuthStorage = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem(AUTH_STORAGE_KEY)
+}
+
 interface AuthState {
   token: string | null
   usuario: Omit<LoginResponse, 'token' | 'tipo'> | null
@@ -31,7 +38,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
-        localStorage.removeItem('token')
+        clearAuthStorage()
         set({
           token: null,
           usuario: null,
@@ -40,7 +47,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'investalert-auth',
+      name: AUTH_STORAGE_KEY,
     }
   )
 )
