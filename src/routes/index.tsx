@@ -6,8 +6,8 @@ import Dashboard from '@/pages/Dashboard'
 import Ativos from '@/pages/Ativos'
 import Carteira from '@/pages/Carteira'
 import Alertas from '@/pages/Alertas'
-import Metas from '@/pages/Metas'
-import Notificacoes from '@/pages/Notificacoes'
+import Metas from '@/pages/Metas/Metas'
+import Notificacoes from '@/pages/Notificacoes/Notificacoes'
 
 interface PrivateRouteProps {
   children: React.ReactNode

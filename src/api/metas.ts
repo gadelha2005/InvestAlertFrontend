@@ -1,5 +1,10 @@
 import api from './axios'
-import type { MetaRequest, MetaResponse } from '@/types'
+import type {
+  MetaMovimentacaoRequest,
+  MetaMovimentacaoResponse,
+  MetaRequest,
+  MetaResponse,
+} from '@/types'
 
 export const metasApi = {
   listar: async (): Promise<MetaResponse[]> => {
@@ -19,5 +24,25 @@ export const metasApi = {
 
   deletar: async (id: number): Promise<void> => {
     await api.delete(`/metas/${id}`)
+  },
+
+  listarMovimentacoes: async (id: number): Promise<MetaMovimentacaoResponse[]> => {
+    const response = await api.get<MetaMovimentacaoResponse[]>(`/metas/${id}/movimentacoes`)
+    return response.data
+  },
+
+  criarMovimentacao: async (
+    id: number,
+    data: MetaMovimentacaoRequest
+  ): Promise<MetaMovimentacaoResponse> => {
+    const response = await api.post<MetaMovimentacaoResponse>(
+      `/metas/${id}/movimentacoes`,
+      data
+    )
+    return response.data
+  },
+
+  deletarMovimentacao: async (metaId: number, movimentacaoId: number): Promise<void> => {
+    await api.delete(`/metas/${metaId}/movimentacoes/${movimentacaoId}`)
   },
 }

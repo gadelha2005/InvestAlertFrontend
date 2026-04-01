@@ -116,9 +116,15 @@ export interface NotificacaoResponse {
 }
 
 // ===== META =====
+export type TipoAcompanhamentoMeta = "MANUAL" | "CARTEIRA_VINCULADA";
+
+export type TipoMovimentacaoMeta = "APORTE" | "RESGATE";
+
 export interface MetaRequest {
   nome: string;
   valorObjetivo: number;
+  tipoAcompanhamento?: TipoAcompanhamentoMeta;
+  carteiraId?: number;
   dataLimite?: string;
 }
 
@@ -127,9 +133,28 @@ export interface MetaResponse {
   nome: string;
   valorObjetivo: number;
   valorAtual: number;
+  tipoAcompanhamento: TipoAcompanhamentoMeta;
+  carteiraId?: number | null;
   percentualConcluido: number;
   dataCriacao: string;
   dataLimite?: string;
+}
+
+export interface MetaMovimentacaoRequest {
+  tipo: TipoMovimentacaoMeta;
+  valor: number;
+  descricao?: string;
+  dataMovimentacao?: string;
+}
+
+export interface MetaMovimentacaoResponse {
+  id: number;
+  metaId: number;
+  tipo: TipoMovimentacaoMeta;
+  valor: number;
+  descricao?: string;
+  dataMovimentacao: string;
+  dataCriacao: string;
 }
 
 // ===== DASHBOARD =====

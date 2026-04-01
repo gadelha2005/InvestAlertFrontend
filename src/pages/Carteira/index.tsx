@@ -115,6 +115,20 @@ export default function Carteira() {
     [todasCarteiras],
   );
 
+  const ativosExistentesNaCarteiraSelecionada = useMemo(() => {
+    if (novaPosicao.carteiraId === "") {
+      return new Set<string>();
+    }
+
+    const carteiraSelecionada = todasCarteiras.find(
+      (carteira) => carteira.id === Number(novaPosicao.carteiraId),
+    );
+
+    return new Set(
+      (carteiraSelecionada?.ativos ?? []).map((ativo) => ativo.ticker),
+    );
+  }, [novaPosicao.carteiraId, todasCarteiras]);
+
   const valorTotal = useMemo(
     () =>
       todasCarteiras.reduce(
@@ -148,16 +162,26 @@ export default function Carteira() {
   }, [custoTotal, lucroPrejuizo]);
 
   const pieData = useMemo(
-    () =>
-      ativosComCarteira
+    () => {
+      const agrupadoPorTicker = ativosComCarteira
         .filter(
           (ativo) =>
             ativo.valorAtual !== undefined && ativo.valorAtual !== null,
         )
-        .map((ativo) => ({
-          name: ativo.ticker,
-          value: ativo.valorAtual ?? 0,
-        })),
+        .reduce<Record<string, number>>((acc, ativo) => {
+          const valorAtual = ativo.valorAtual ?? 0;
+          acc[ativo.ticker] = (acc[ativo.ticker] ?? 0) + valorAtual;
+          return acc;
+        }, {});
+
+      return Object.entries(agrupadoPorTicker)
+        .map(([ticker, value]) => ({
+          id: ticker,
+          name: ticker,
+          value,
+        }))
+        .sort((a, b) => b.value - a.value);
+    },
     [ativosComCarteira],
   );
 
@@ -235,6 +259,13 @@ export default function Carteira() {
 
     if (novaPosicao.carteiraId === "" || novaPosicao.ticker.trim() === "") {
       setSubmitError("Preencha carteira e ativo para continuar.");
+      return;
+    }
+
+    if (ativosExistentesNaCarteiraSelecionada.has(novaPosicao.ticker.trim())) {
+      setSubmitError(
+        `O ativo ${novaPosicao.ticker.trim()} ja existe na carteira selecionada.`,
+      );
       return;
     }
 
@@ -463,40 +494,46 @@ export default function Carteira() {
               </div>
 
               <div className="portfolio-chart">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={88}
-                      innerRadius={56}
-                      strokeWidth={0}
-                    >
-                      {pieData.map((item, index) => (
-                        <Cell
-                          key={`${item.name}-${index}`}
-                          fill={CHART_COLORS[index % CHART_COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(value) => [
-                        formatarMoeda(
-                          typeof value === "number" ? value : undefined,
-                        ),
-                        "Valor",
-                      ]}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+                {pieData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={88}
+                        innerRadius={56}
+                        strokeWidth={0}
+                      >
+                        {pieData.map((item, index) => (
+                          <Cell
+                            key={`${item.id}-${index}`}
+                            fill={CHART_COLORS[index % CHART_COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(value) => [
+                          formatarMoeda(
+                            typeof value === "number" ? value : undefined,
+                          ),
+                          "Valor",
+                        ]}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="portfolio-chart__empty">
+                    Nenhum valor atual disponivel para montar o grafico.
+                  </div>
+                )}
               </div>
 
               <div className="portfolio-chart__legend">
                 {pieData.map((item, index) => (
-                  <div key={item.name} className="portfolio-chart__legend-item">
+                  <div key={item.id} className="portfolio-chart__legend-item">
                     <span
                       className="portfolio-chart__legend-color"
                       style={{
@@ -852,8 +889,17 @@ export default function Carteira() {
                     >
                       <option value="">Selecione</option>
                       {ativosCatalogo.map((ativo) => (
-                        <option key={ativo.id} value={ativo.ticker}>
+                        <option
+                          key={ativo.id}
+                          value={ativo.ticker}
+                          disabled={ativosExistentesNaCarteiraSelecionada.has(
+                            ativo.ticker,
+                          )}
+                        >
                           {ativo.ticker} {ativo.nome ? `- ${ativo.nome}` : ""}
+                          {ativosExistentesNaCarteiraSelecionada.has(ativo.ticker)
+                            ? " (ja adicionado)"
+                            : ""}
                         </option>
                       ))}
                     </select>
