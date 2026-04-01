@@ -8,12 +8,13 @@
   padding: 0 18px;
   border: 0;
   border-radius: 18px;
-  background: linear-gradient(135deg, #26bdd1 0%, #22d3ee 100%);
+  background: linear-gradient(135deg, #18b2c7 0%, #14cae6 100%);
   color: #082f49;
   font-size: 0.96rem;
   font-weight: 700;
   cursor: pointer;
   transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+  
 }
 
 .button:hover {

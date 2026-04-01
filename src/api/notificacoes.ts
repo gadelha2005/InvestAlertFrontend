@@ -25,4 +25,8 @@ export const notificacoesApi = {
   marcarTodasComoLidas: async (): Promise<void> => {
     await api.patch('/notificacoes/lidas')
   },
+
+  deletarTodas: async (): Promise<void> => {
+    await api.delete('/notificacoes')
+  },
 }
