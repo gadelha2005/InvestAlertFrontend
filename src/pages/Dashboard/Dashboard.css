@@ -87,12 +87,64 @@
 }
 
 .dashboard-section__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px 12px;
   border-radius: 999px;
   background: rgba(34, 211, 238, 0.12);
   color: #a5f3fc;
   font-size: 0.8rem;
   font-weight: 600;
+}
+
+.dashboard-chart {
+  width: 100%;
+  min-width: 0;
+  height: 320px;
+  min-height: 320px;
+}
+
+.dashboard-chart__empty {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  color: #94a3b8;
+  text-align: center;
+  line-height: 1.7;
+}
+
+.dashboard-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-top: 16px;
+}
+
+.dashboard-chart__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-size: 0.84rem;
+}
+
+.dashboard-chart__legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.dashboard-chart__legend-color--current {
+  background: #22c55e;
+}
+
+.dashboard-chart__legend-color--invested {
+  background: #38bdf8;
 }
 
 .dashboard-list {
