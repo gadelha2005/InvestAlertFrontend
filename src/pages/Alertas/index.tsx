@@ -203,8 +203,8 @@ export default function Alertas() {
           </div>
         </section>
 
-        {submitError ? <div className="alerts-feedback alerts-feedback--error">{submitError}</div> : null}
-        {submitSuccess ? <div className="alerts-feedback alerts-feedback--success">{submitSuccess}</div> : null}
+        {!isModalOpen && submitError ? <div className="alerts-feedback alerts-feedback--error">{submitError}</div> : null}
+        {!isModalOpen && submitSuccess ? <div className="alerts-feedback alerts-feedback--success">{submitSuccess}</div> : null}
 
         <section className="alerts-page__stats">
           <StatCard label="Alertas totais" value={String(alertas.length)} meta="Configurados no momento" icon={Bell} />
@@ -288,6 +288,9 @@ export default function Alertas() {
               </div>
 
               <form className="alerts-modal__form" onSubmit={handleSubmit}>
+                {submitError ? <div className="alerts-feedback alerts-feedback--error">{submitError}</div> : null}
+                {submitSuccess ? <div className="alerts-feedback alerts-feedback--success">{submitSuccess}</div> : null}
+
                 <div className="alerts-modal__grid">
                   <div className="alerts-modal__field">
                     <Label htmlFor="ticker">Ativo</Label>
