@@ -53,9 +53,6 @@ export default function Ativos() {
   const loadingWithDelay = useLoadingWithDelay();
   const [formData, setFormData] = useState<AtivoRequest>({
     ticker: "",
-    nome: "",
-    tipo: "ACAO",
-    mercado: "",
   });
 
   const carregarAtivos = async () => {
@@ -119,9 +116,6 @@ export default function Ativos() {
   const resetForm = () => {
     setFormData({
       ticker: "",
-      nome: "",
-      tipo: "ACAO",
-      mercado: "",
     });
     setSubmitError("");
     setSubmitSuccess("");
@@ -149,9 +143,6 @@ export default function Ativos() {
       await loadingWithDelay(() =>
         ativosApi.cadastrar({
           ticker: formData.ticker.trim().toUpperCase(),
-          nome: formData.nome?.trim() || undefined,
-          tipo: formData.tipo,
-          mercado: formData.mercado?.trim() || undefined,
         }),
       );
 
@@ -332,7 +323,7 @@ export default function Ativos() {
                 <div>
                   <h2 className="assets-modal__title">Adicionar ativo</h2>
                   <p className="assets-modal__description">
-                    Este cadastro adiciona um ativo global na base do sistema.
+                    Informe apenas o ticker. O sistema busca nome, tipo e mercado automaticamente.
                   </p>
                 </div>
 
@@ -347,68 +338,15 @@ export default function Ativos() {
               </div>
 
               <form className="assets-modal__form" onSubmit={handleSubmit}>
-                <div className="assets-modal__grid">
-                  <div className="assets-modal__field">
-                    <Label htmlFor="ticker">Ticker</Label>
-                    <Input
-                      id="ticker"
-                      type="text"
-                      placeholder="Ex.: PETR4"
-                      value={formData.ticker}
-                      onChange={(event) =>
-                        handleInputChange("ticker", event.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div className="assets-modal__field">
-                    <Label htmlFor="tipo">Tipo</Label>
-                    <select
-                      id="tipo"
-                      className="assets-modal__select"
-                      value={formData.tipo}
-                      onChange={(event) =>
-                        handleInputChange(
-                          "tipo",
-                          event.target.value as TipoAtivo,
-                        )
-                      }
-                    >
-                      {(
-                        typeOptions.filter(
-                          (type) => type !== "TODOS",
-                        ) as TipoAtivo[]
-                      ).map((type) => (
-                        <option key={type} value={type}>
-                          {typeLabels[type]}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
                 <div className="assets-modal__field">
-                  <Label htmlFor="nome">Nome</Label>
+                  <Label htmlFor="ticker">Ticker</Label>
                   <Input
-                    id="nome"
+                    id="ticker"
                     type="text"
-                    placeholder="Nome do ativo"
-                    value={formData.nome ?? ""}
+                    placeholder="Ex.: PETR4, SPY ou BTC"
+                    value={formData.ticker}
                     onChange={(event) =>
-                      handleInputChange("nome", event.target.value)
-                    }
-                  />
-                </div>
-
-                <div className="assets-modal__field">
-                  <Label htmlFor="mercado">Mercado</Label>
-                  <Input
-                    id="mercado"
-                    type="text"
-                    placeholder="B3, Nasdaq, Cripto..."
-                    value={formData.mercado ?? ""}
-                    onChange={(event) =>
-                      handleInputChange("mercado", event.target.value)
+                      handleInputChange("ticker", event.target.value)
                     }
                   />
                 </div>

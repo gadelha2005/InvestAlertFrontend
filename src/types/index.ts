@@ -33,9 +33,6 @@ export type TipoAtivo = "ACAO" | "ETF" | "FII" | "CRIPTOMOEDA" | "INDICE";
 
 export interface AtivoRequest {
   ticker: string;
-  nome?: string;
-  tipo: TipoAtivo;
-  mercado?: string;
 }
 
 export interface AtivoResponse {
@@ -158,6 +155,11 @@ export interface MetaMovimentacaoResponse {
 }
 
 // ===== DASHBOARD =====
+export interface DashboardHistoricoPoint {
+  dataHora: string
+  valorCarteira: number
+}
+
 export interface DashboardResponse {
   valorTotalCarteira: number;
   lucroPrejuizoTotal: number;
@@ -165,6 +167,7 @@ export interface DashboardResponse {
   alertasAtivos: number;
   notificacoesNaoLidas: number;
   ativos: CarteiraAtivoResponse[];
+  historicoCarteira: DashboardHistoricoPoint[];
   metas: MetaResponse[];
 }
 

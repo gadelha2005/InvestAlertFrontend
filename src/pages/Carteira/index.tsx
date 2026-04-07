@@ -262,13 +262,6 @@ export default function Carteira() {
       return;
     }
 
-    if (ativosExistentesNaCarteiraSelecionada.has(novaPosicao.ticker.trim())) {
-      setSubmitError(
-        `O ativo ${novaPosicao.ticker.trim()} ja existe na carteira selecionada.`,
-      );
-      return;
-    }
-
     const quantidade = Number(novaPosicao.quantidade);
     const valor = Number(novaPosicao.valor);
     const precoMedio = Number(novaPosicao.precoMedio);
@@ -328,7 +321,7 @@ export default function Carteira() {
       await loadingWithDelay(() =>
         carteiraApi.adicionarAtivo(Number(novaPosicao.carteiraId), payload),
       );
-      setSubmitSuccess("Ativo adicionado a carteira com sucesso.");
+      setSubmitSuccess("Posicao do ativo atualizada com sucesso.");
       await carregarDados();
       window.setTimeout(() => closeAddAtivoModal(), 900);
     } catch (error) {
@@ -889,16 +882,10 @@ export default function Carteira() {
                     >
                       <option value="">Selecione</option>
                       {ativosCatalogo.map((ativo) => (
-                        <option
-                          key={ativo.id}
-                          value={ativo.ticker}
-                          disabled={ativosExistentesNaCarteiraSelecionada.has(
-                            ativo.ticker,
-                          )}
-                        >
+                        <option key={ativo.id} value={ativo.ticker}>
                           {ativo.ticker} {ativo.nome ? `- ${ativo.nome}` : ""}
                           {ativosExistentesNaCarteiraSelecionada.has(ativo.ticker)
-                            ? " (ja adicionado)"
+                            ? ""
                             : ""}
                         </option>
                       ))}
