@@ -42,6 +42,9 @@ export interface AtivoResponse {
   tipo: TipoAtivo;
   mercado?: string;
   precoAtual?: number;
+  variacao?: number;
+  variacaoPercentual?: number;
+  volume?: number;
 }
 
 // ===== CARTEIRA =====

@@ -6,6 +6,7 @@ import Dashboard from '@/pages/Dashboard'
 import Ativos from '@/pages/Ativos'
 import Carteira from '@/pages/Carteira'
 import Alertas from '@/pages/Alertas'
+import Scanner from '@/pages/Scanner'
 import Metas from '@/pages/Metas/Metas'
 import Notificacoes from '@/pages/Notificacoes/Notificacoes'
 
@@ -47,6 +48,9 @@ export default function AppRoutes() {
         } />
         <Route path="/alertas" element={
           <PrivateRoute><Alertas /></PrivateRoute>
+        } />
+        <Route path="/scanner" element={
+          <PrivateRoute><Scanner /></PrivateRoute>
         } />
         <Route path="/metas" element={
           <PrivateRoute><Metas /></PrivateRoute>

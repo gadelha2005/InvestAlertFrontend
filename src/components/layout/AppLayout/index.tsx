@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import {
   Bell,
+  CandlestickChart,
   LayoutDashboard,
   LineChart,
   LogOut,
@@ -30,6 +31,11 @@ const navItems = [
     to: '/ativos',
     label: 'Ativos',
     icon: LineChart,
+  },
+  {
+    to: '/scanner',
+    label: 'Scanner',
+    icon: CandlestickChart,
   },
   {
     to: '/carteira',
