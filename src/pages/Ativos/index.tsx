@@ -53,6 +53,7 @@ export default function Ativos() {
   const loadingWithDelay = useLoadingWithDelay();
   const [formData, setFormData] = useState<AtivoRequest>({
     ticker: "",
+    tipo: "ACAO",
   });
 
   const carregarAtivos = async () => {
@@ -116,6 +117,7 @@ export default function Ativos() {
   const resetForm = () => {
     setFormData({
       ticker: "",
+      tipo: "ACAO",
     });
     setSubmitError("");
     setSubmitSuccess("");
@@ -136,6 +138,11 @@ export default function Ativos() {
       return;
     }
 
+    if (!formData.tipo) {
+      setSubmitError("Selecione o tipo do ativo para continuar.");
+      return;
+    }
+
     setIsSubmitting(true);
     setIsOperationLoading(true);
 
@@ -143,6 +150,7 @@ export default function Ativos() {
       await loadingWithDelay(() =>
         ativosApi.cadastrar({
           ticker: formData.ticker.trim().toUpperCase(),
+          tipo: formData.tipo,
         }),
       );
 
@@ -323,7 +331,8 @@ export default function Ativos() {
                 <div>
                   <h2 className="assets-modal__title">Adicionar ativo</h2>
                   <p className="assets-modal__description">
-                    Informe apenas o ticker. O sistema busca nome, tipo e mercado automaticamente.
+                    Informe o ticker e selecione o tipo. O sistema busca nome,
+                    mercado e preco automaticamente.
                   </p>
                 </div>
 
@@ -349,6 +358,26 @@ export default function Ativos() {
                       handleInputChange("ticker", event.target.value)
                     }
                   />
+                </div>
+
+                <div className="assets-modal__field">
+                  <Label htmlFor="tipo">Tipo</Label>
+                  <select
+                    id="tipo"
+                    className="assets-modal__select"
+                    value={formData.tipo}
+                    onChange={(event) =>
+                      handleInputChange("tipo", event.target.value as TipoAtivo)
+                    }
+                  >
+                    {typeOptions
+                      .filter((type): type is TipoAtivo => type !== "TODOS")
+                      .map((type) => (
+                        <option key={type} value={type}>
+                          {getTypeLabel(type)}
+                        </option>
+                      ))}
+                  </select>
                 </div>
 
                 {submitError ? (

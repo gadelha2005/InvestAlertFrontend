@@ -33,6 +33,7 @@ export type TipoAtivo = "ACAO" | "ETF" | "FII" | "CRIPTOMOEDA" | "INDICE";
 
 export interface AtivoRequest {
   ticker: string;
+  tipo: TipoAtivo;
 }
 
 export interface AtivoResponse {
