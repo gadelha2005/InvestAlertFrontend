@@ -11,6 +11,7 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -38,7 +39,11 @@ interface EvolucaoCarteiraPoint {
   dataCompleta: string
   valorAtual: number
   valorInvestido: number
+  isAporte: boolean
+  aporteValor?: number
 }
+
+type PeriodoFiltro = '1S' | '1M' | '3M' | '6M' | '1A' | 'Tudo'
 
 const getVariationTone = (value?: number | null) => {
   if (value === undefined || value === null || value === 0) {
@@ -71,6 +76,7 @@ export default function Dashboard() {
   })
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
+  const [periodoFiltro, setPeriodoFiltro] = useState<PeriodoFiltro>('1A')
   const hasDashboardDataRef = useRef(false)
 
   const carregarDashboard = useCallback(async (options?: { silent?: boolean }) => {
@@ -131,59 +137,129 @@ export default function Dashboard() {
   const lucroPrejuizo = dashboard?.lucroPrejuizoTotal ?? 0
 
   const evolucaoCarteira = useMemo<EvolucaoCarteiraPoint[]>(() => {
+    if (ativos.length === 0) return []
+
     const ativosOrdenados = [...ativos].sort(
       (a, b) =>
         new Date(a.dataCompra).getTime() - new Date(b.dataCompra).getTime()
     )
 
-    const ativosPorDia = new Map<
-      string,
-      {
-        dataCompra: string
-        valorAtualDia: number
-        valorInvestidoDia: number
-      }
-    >()
+    // Mapa de aportes por dia
+    const aportesPorDia = new Map<string, { valor: number; dataOriginal: string }>()
 
     ativosOrdenados.forEach((ativo) => {
       const chaveData = new Date(ativo.dataCompra).toISOString().slice(0, 10)
-      const entradaAtual = ativosPorDia.get(chaveData)
+      const entradaAtual = aportesPorDia.get(chaveData)
 
-      const valorAtualAtivo =
-        ativo.valorAtual ??
-        (ativo.precoAtual !== undefined
-          ? ativo.precoAtual * ativo.quantidade
-          : ativo.valor ?? 0)
+      const valorAportado = ativo.valorInvestido ?? 0
 
       if (entradaAtual) {
-        entradaAtual.valorAtualDia += valorAtualAtivo
-        entradaAtual.valorInvestidoDia += ativo.valorInvestido ?? 0
-        return
+        entradaAtual.valor += valorAportado
+      } else {
+        aportesPorDia.set(chaveData, {
+          valor: valorAportado,
+          dataOriginal: ativo.dataCompra,
+        })
       }
+    })
 
-      ativosPorDia.set(chaveData, {
-        dataCompra: ativo.dataCompra,
-        valorAtualDia: valorAtualAtivo,
-        valorInvestidoDia: ativo.valorInvestido ?? 0,
+    // Gerar pontos para cada dia entre primeira compra e hoje
+    const primeiroDia = new Date(ativosOrdenados[0].dataCompra)
+    primeiroDia.setHours(0, 0, 0, 0)
+
+    const ultimoDia = new Date()
+    ultimoDia.setHours(0, 0, 0, 0)
+
+    const resultado: EvolucaoCarteiraPoint[] = []
+
+    for (
+      let data = new Date(primeiroDia);
+      data <= ultimoDia;
+      data.setDate(data.getDate() + 1)
+    ) {
+      const chaveData = data.toISOString().slice(0, 10)
+      const isAporte = aportesPorDia.has(chaveData)
+      const aporteInfo = aportesPorDia.get(chaveData)
+      const aporteValor = aporteInfo?.valor ?? 0
+
+      // Calcular valor acumulado até esta data para todos os ativos já comprados
+      let valorAtualDia = 0
+      let valorInvestidoDia = 0
+
+      ativosOrdenados.forEach((ativo) => {
+        const dataAtivoCompra = new Date(ativo.dataCompra)
+        dataAtivoCompra.setHours(0, 0, 0, 0)
+
+        if (dataAtivoCompra <= data) {
+          const valorAtualAtivo =
+            ativo.valorAtual ??
+            (ativo.precoAtual !== undefined
+              ? ativo.precoAtual * ativo.quantidade
+              : ativo.valor ?? 0)
+          valorAtualDia += valorAtualAtivo
+          valorInvestidoDia += ativo.valorInvestido ?? 0
+        }
       })
-    })
 
-    let valorAtualAcumulado = 0
-    let valorInvestidoAcumulado = 0
-
-    return [...ativosPorDia.entries()].map(([chaveData, item]) => {
-      valorAtualAcumulado += item.valorAtualDia
-      valorInvestidoAcumulado += item.valorInvestidoDia
-
-      return {
+      resultado.push({
         chaveData,
-        data: formatarDia(item.dataCompra),
-        dataCompleta: formatarDiaCompleto(item.dataCompra),
-        valorAtual: valorAtualAcumulado,
-        valorInvestido: valorInvestidoAcumulado,
-      }
-    })
+        data: formatarDia(chaveData),
+        dataCompleta: formatarDiaCompleto(chaveData),
+        valorAtual: valorAtualDia,
+        valorInvestido: valorInvestidoDia,
+        isAporte,
+        aporteValor: isAporte ? aporteValor : undefined,
+      })
+    }
+
+    return resultado
   }, [ativos])
+
+  // Filtrar dados baseado no período selecionado
+  const dadosFiltrados = useMemo(() => {
+    if (evolucaoCarteira.length === 0) return []
+
+    const now = new Date()
+    now.setHours(0, 0, 0, 0)
+
+    const dataCorte = new Date(now)
+
+    switch (periodoFiltro) {
+      case '1S':
+        dataCorte.setDate(dataCorte.getDate() - 7)
+        break
+      case '1M':
+        dataCorte.setMonth(dataCorte.getMonth() - 1)
+        break
+      case '3M':
+        dataCorte.setMonth(dataCorte.getMonth() - 3)
+        break
+      case '6M':
+        dataCorte.setMonth(dataCorte.getMonth() - 6)
+        break
+      case '1A':
+        dataCorte.setFullYear(dataCorte.getFullYear() - 1)
+        break
+      case 'Tudo':
+        return evolucaoCarteira
+    }
+
+    return evolucaoCarteira.filter((ponto) => {
+      const dataPonto = new Date(ponto.chaveData)
+      return dataPonto >= dataCorte
+    })
+  }, [evolucaoCarteira, periodoFiltro])
+
+  // Calcular domínio dinâmico do eixo Y baseado no período filtrado
+  const yAxisDomain = useMemo(() => {
+    if (dadosFiltrados.length === 0) return [0, 100]
+
+    const valores = dadosFiltrados.map((p) => p.valorAtual)
+    const min = Math.min(...valores)
+    const max = Math.max(...valores)
+
+    return [min * 0.995, max * 1.005]
+  }, [dadosFiltrados])
 
   if (isLoading) {
     return (
@@ -286,18 +362,36 @@ export default function Dashboard() {
               </div>
             </div>
 
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              {(['1S', '1M', '3M', '6M', '1A', 'Tudo'] as const).map((periodo) => (
+                <button
+                  key={periodo}
+                  onClick={() => setPeriodoFiltro(periodo)}
+                  style={{
+                    padding: '6px 12px',
+                    border: periodo === periodoFiltro ? '1px solid #22c55e' : '1px solid rgba(255, 255, 255, 0.18)',
+                    background: periodo === periodoFiltro ? 'rgba(34, 197, 94, 0.15)' : 'transparent',
+                    color: periodo === periodoFiltro ? '#22c55e' : '#94a3b8',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: periodo === periodoFiltro ? 600 : 500,
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  {periodo}
+                </button>
+              ))}
+            </div>
+
             <div className="dashboard-chart">
               {evolucaoCarteira.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={evolucaoCarteira} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <AreaChart data={dadosFiltrados} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                     <defs>
                       <linearGradient id="dashboardChartValue" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#22c55e" stopOpacity={0.35} />
                         <stop offset="100%" stopColor="#22c55e" stopOpacity={0.02} />
-                      </linearGradient>
-                      <linearGradient id="dashboardChartInvested" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#38bdf8" stopOpacity={0.2} />
-                        <stop offset="100%" stopColor="#38bdf8" stopOpacity={0.02} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid stroke="rgba(148, 163, 184, 0.16)" vertical={false} />
@@ -308,6 +402,7 @@ export default function Dashboard() {
                       tick={{ fill: '#94a3b8', fontSize: 12 }}
                     />
                     <YAxis
+                      domain={yAxisDomain}
                       axisLine={false}
                       tickLine={false}
                       tick={{ fill: '#94a3b8', fontSize: 12 }}
@@ -325,22 +420,80 @@ export default function Dashboard() {
                         borderRadius: '16px',
                       }}
                       labelStyle={{ color: '#cbd5e1' }}
-                      formatter={(value, name) => [
-                        formatarMoeda(typeof value === 'number' ? value : Number(value ?? 0)),
-                        name === 'valorAtual' ? 'Valor atual' : 'Valor investido',
-                      ]}
-                      labelFormatter={(_, payload) =>
-                        payload?.[0]?.payload?.dataCompleta ?? ''
-                      }
+                      content={({ active, payload }) => {
+                        if (!active || !payload || payload.length === 0) return null
+
+                        const ponto = payload[0].payload as EvolucaoCarteiraPoint
+                        const primeiroValor = dadosFiltrados[0]?.valorAtual ?? ponto.valorAtual
+                        const variacao =
+                          ((ponto.valorAtual - primeiroValor) / primeiroValor) * 100
+
+                        return (
+                          <div
+                            style={{
+                              padding: '12px 14px',
+                            }}
+                          >
+                            <p
+                              style={{
+                                margin: '0 0 8px',
+                                color: '#94a3b8',
+                                fontSize: '0.8rem',
+                              }}
+                            >
+                              {ponto.dataCompleta}
+                            </p>
+                            <p
+                              style={{
+                                margin: '0 0 4px',
+                                color: '#cbd5e1',
+                                fontSize: '0.88rem',
+                              }}
+                            >
+                              Valor: <strong>{formatarMoeda(ponto.valorAtual)}</strong>
+                            </p>
+                            <p
+                              style={{
+                                margin: '0 0 4px',
+                                color: variacao >= 0 ? '#86efac' : '#fca5a5',
+                                fontSize: '0.88rem',
+                              }}
+                            >
+                              Variação: <strong>{variacao.toFixed(2)}%</strong>
+                            </p>
+                            {ponto.isAporte && ponto.aporteValor !== undefined && (
+                              <p
+                                style={{
+                                  margin: '6px 0 0',
+                                  color: '#f59e0b',
+                                  fontSize: '0.88rem',
+                                  fontWeight: 600,
+                                }}
+                              >
+                                Aporte: {formatarMoeda(ponto.aporteValor)}
+                              </p>
+                            )}
+                          </div>
+                        )
+                      }}
                     />
-                    <Area
-                      type="monotone"
-                      dataKey="valorInvestido"
-                      name="valorInvestido"
-                      stroke="#38bdf8"
-                      strokeWidth={2}
-                      fill="url(#dashboardChartInvested)"
-                    />
+                    {dadosFiltrados
+                      .filter((ponto) => ponto.isAporte)
+                      .map((ponto) => (
+                        <ReferenceLine
+                          key={`aporte-${ponto.chaveData}`}
+                          x={ponto.chaveData}
+                          stroke="#f59e0b"
+                          strokeDasharray="4 4"
+                          label={{
+                            value: formatarMoeda(ponto.aporteValor ?? 0),
+                            position: 'top',
+                            fill: '#f59e0b',
+                            fontSize: 11,
+                            fontWeight: 500,
+                          }}
+                        />
+                      ))}
                     <Area
                       type="monotone"
                       dataKey="valorAtual"
@@ -368,8 +521,9 @@ export default function Dashboard() {
               <div className="dashboard-chart__legend-item">
                 <span
                   className="dashboard-chart__legend-color dashboard-chart__legend-color--invested"
+                  style={{ backgroundColor: '#f59e0b' }}
                 />
-                Valor investido acumulado
+                Linhas: dias com aportes
               </div>
             </div>
           </section>
