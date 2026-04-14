@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
-import { useState } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import type { ReactNode } from "react";
+import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   Bell,
   CandlestickChart,
@@ -12,70 +12,74 @@ import {
   TrendingUp,
   Wallet,
   X,
-} from 'lucide-react'
-import Button from '@/components/ui/Button'
-import OnboardingTour from '@/components/OnboardingTour/OnboardingTour'
-import { useAuthStore } from '@/store/authStore'
-import './AppLayout.css'
+} from "lucide-react";
+import Button from "@/components/ui/Button";
+import OnboardingTour from "@/components/OnboardingTour/OnboardingTour";
+import { useAuthStore } from "@/store/authStore";
+import "./AppLayout.css";
 
 interface AppLayoutProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 const navItems = [
   {
-    to: '/dashboard',
-    label: 'Dashboard',
+    to: "/dashboard",
+    label: "Dashboard",
     icon: LayoutDashboard,
   },
   {
-    to: '/ativos',
-    label: 'Ativos',
+    to: "/ativos",
+    label: "Ativos",
     icon: LineChart,
   },
   {
-    to: '/scanner',
-    label: 'Scanner',
+    to: "/scanner",
+    label: "Scanner",
     icon: CandlestickChart,
   },
   {
-    to: '/carteira',
-    label: 'Carteira',
+    to: "/carteira",
+    label: "Carteira",
     icon: Wallet,
   },
   {
-    to: '/alertas',
-    label: 'Alertas',
+    to: "/alertas",
+    label: "Alertas",
     icon: Bell,
   },
   {
-    to: '/metas',
-    label: 'Metas',
+    to: "/metas",
+    label: "Metas",
     icon: Target,
   },
   {
-    to: '/notificacoes',
-    label: 'Notificacoes',
+    to: "/notificacoes",
+    label: "Notificacoes",
     icon: TrendingUp,
   },
-]
+];
 
 export default function AppLayout({ children }: AppLayoutProps) {
-  const navigate = useNavigate()
-  const { usuario, logout } = useAuthStore()
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const navigate = useNavigate();
+  const { usuario, logout } = useAuthStore();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
+    logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className="app-layout">
       <header className="app-layout__header">
         <div className="app-layout__header-inner">
           <div className="app-layout__brand-group">
-            <Link to="/dashboard" className="app-layout__brand" data-onboarding="app-layout__brand">
+            <Link
+              to="/dashboard"
+              className="app-layout__brand"
+              data-onboarding="app-layout__brand"
+            >
               <div className="app-layout__brand-badge">
                 <TrendingUp size={20} />
               </div>
@@ -87,8 +91,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
             <nav className="app-layout__nav">
               {navItems.map((item) => {
-                const Icon = item.icon
-                const onboardingId = `${item.label.toLowerCase()}-nav`
+                const Icon = item.icon;
+                const onboardingId = `${item.label.toLowerCase()}-nav`;
 
                 return (
                   <NavLink
@@ -97,24 +101,28 @@ export default function AppLayout({ children }: AppLayoutProps) {
                     data-onboarding={onboardingId}
                     className={({ isActive }) =>
                       [
-                        'app-layout__nav-link',
-                        isActive ? 'app-layout__nav-link--active' : '',
-                      ].join(' ').trim()
+                        "app-layout__nav-link",
+                        isActive ? "app-layout__nav-link--active" : "",
+                      ]
+                        .join(" ")
+                        .trim()
                     }
                   >
                     <Icon size={16} />
                     {item.label}
                   </NavLink>
-                )
+                );
               })}
             </nav>
           </div>
 
           <div className="app-layout__actions">
             <div className="app-layout__identity">
-              <p className="app-layout__identity-name">{usuario?.nome || 'Investidor'}</p>
+              <p className="app-layout__identity-name">
+                {usuario?.nome || "Investidor"}
+              </p>
               <p className="app-layout__identity-email">
-                {usuario?.email || 'Sessao autenticada'}
+                {usuario?.email || "Sessao autenticada"}
               </p>
             </div>
 
@@ -127,7 +135,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
               type="button"
               className="app-layout__menu-button"
               onClick={() => setMobileOpen((current) => !current)}
-              aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
+              aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -138,8 +146,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
           <div className="app-layout__mobile-nav">
             <div className="app-layout__mobile-nav-inner">
               {navItems.map((item) => {
-                const Icon = item.icon
-                const onboardingId = `${item.label.toLowerCase()}-nav`
+                const Icon = item.icon;
+                const onboardingId = `${item.label.toLowerCase()}-nav`;
 
                 return (
                   <NavLink
@@ -149,15 +157,17 @@ export default function AppLayout({ children }: AppLayoutProps) {
                     data-onboarding={onboardingId}
                     className={({ isActive }) =>
                       [
-                        'app-layout__nav-link',
-                        isActive ? 'app-layout__nav-link--active' : '',
-                      ].join(' ').trim()
+                        "app-layout__nav-link",
+                        isActive ? "app-layout__nav-link--active" : "",
+                      ]
+                        .join(" ")
+                        .trim()
                     }
                   >
                     <Icon size={16} />
                     {item.label}
                   </NavLink>
-                )
+                );
               })}
             </div>
           </div>
@@ -168,5 +178,5 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       <OnboardingTour />
     </div>
-  )
+  );
 }

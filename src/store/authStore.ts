@@ -1,20 +1,21 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-import type { LoginResponse } from '@/types'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { LoginResponse } from "@/types";
 
-export const AUTH_STORAGE_KEY = 'investalert-auth'
+export const AUTH_STORAGE_KEY = "investalert-auth";
 
 export const clearAuthStorage = () => {
-  localStorage.removeItem('token')
-  localStorage.removeItem(AUTH_STORAGE_KEY)
-}
+  localStorage.removeItem("token");
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+  localStorage.removeItem("investalert-onboarding");
+};
 
 interface AuthState {
-  token: string | null
-  usuario: Omit<LoginResponse, 'token' | 'tipo'> | null
-  isAuthenticated: boolean
-  login: (data: LoginResponse) => void
-  logout: () => void
+  token: string | null;
+  usuario: Omit<LoginResponse, "token" | "tipo"> | null;
+  isAuthenticated: boolean;
+  login: (data: LoginResponse) => void;
+  logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -25,7 +26,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       login: (data: LoginResponse) => {
-        localStorage.setItem('token', data.token)
+        localStorage.setItem("token", data.token);
         set({
           token: data.token,
           usuario: {
@@ -34,20 +35,20 @@ export const useAuthStore = create<AuthState>()(
             email: data.email,
           },
           isAuthenticated: true,
-        })
+        });
       },
 
       logout: () => {
-        clearAuthStorage()
+        clearAuthStorage();
         set({
           token: null,
           usuario: null,
           isAuthenticated: false,
-        })
+        });
       },
     }),
     {
       name: AUTH_STORAGE_KEY,
-    }
-  )
-)
+    },
+  ),
+);
