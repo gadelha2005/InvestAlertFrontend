@@ -14,6 +14,7 @@ import {
   X,
 } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import OnboardingTour from '@/components/OnboardingTour/OnboardingTour'
 import { useAuthStore } from '@/store/authStore'
 import './AppLayout.css'
 
@@ -74,7 +75,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       <header className="app-layout__header">
         <div className="app-layout__header-inner">
           <div className="app-layout__brand-group">
-            <Link to="/dashboard" className="app-layout__brand">
+            <Link to="/dashboard" className="app-layout__brand" data-onboarding="app-layout__brand">
               <div className="app-layout__brand-badge">
                 <TrendingUp size={20} />
               </div>
@@ -87,11 +88,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
             <nav className="app-layout__nav">
               {navItems.map((item) => {
                 const Icon = item.icon
+                const onboardingId = `${item.label.toLowerCase()}-nav`
 
                 return (
                   <NavLink
                     key={item.to}
                     to={item.to}
+                    data-onboarding={onboardingId}
                     className={({ isActive }) =>
                       [
                         'app-layout__nav-link',
@@ -136,12 +139,14 @@ export default function AppLayout({ children }: AppLayoutProps) {
             <div className="app-layout__mobile-nav-inner">
               {navItems.map((item) => {
                 const Icon = item.icon
+                const onboardingId = `${item.label.toLowerCase()}-nav`
 
                 return (
                   <NavLink
                     key={item.to}
                     to={item.to}
                     onClick={() => setMobileOpen(false)}
+                    data-onboarding={onboardingId}
                     className={({ isActive }) =>
                       [
                         'app-layout__nav-link',
@@ -160,6 +165,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
       </header>
 
       <main className="app-layout__main">{children}</main>
+
+      <OnboardingTour />
     </div>
   )
 }
