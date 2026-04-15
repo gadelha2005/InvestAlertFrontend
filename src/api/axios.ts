@@ -2,8 +2,11 @@ import axios from 'axios'
 import { clearAuthStorage } from '@/store/authStore'
 import type { ErrorResponse } from '@/types'
 
+const apiUrl = import.meta.env.VITE_API_URL || '/api'
+const baseURL = import.meta.env.PROD ? `${apiUrl}/api` : '/api'
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
