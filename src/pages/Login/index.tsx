@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { authApi } from "@/api/auth";
 import { useLoadingWithDelay } from "@/hooks/useLoadingWithDelay";
 import LoadingOverlay from "@/components/LoadingOverlay";
@@ -13,6 +13,8 @@ import "./Login.css";
 
 export default function Login() {
   const { isAuthenticated, login } = useAuthStore();
+  const location = useLocation();
+  const successMessage = (location.state as { mensagem?: string })?.mensagem;
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -87,9 +89,9 @@ export default function Login() {
           <div className="login-form__field">
             <div className="login-form__row">
               <Label htmlFor="password">Senha</Label>
-              <button type="button" className="login-form__helper">
+              <Link to="/esqueci-senha" className="login-form__helper">
                 Esqueci minha senha
-              </button>
+              </Link>
             </div>
             <Input
               id="password"
@@ -100,6 +102,12 @@ export default function Login() {
               autoComplete="current-password"
             />
           </div>
+
+          {successMessage && (
+            <div className="login-form__feedback login-form__feedback--success">
+              {successMessage}
+            </div>
+          )}
 
           {errorMessage ? (
             <div className="login-form__feedback login-form__feedback--error">

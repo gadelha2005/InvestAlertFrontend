@@ -16,4 +16,12 @@ export const authApi = {
     const response = await api.get<UsuarioResponse>('/usuarios/me')
     return response.data
   },
+
+  solicitarRedefinicao: async (email: string): Promise<void> => {
+    await api.post('/auth/esqueci-senha', { email })
+  },
+
+  redefinirSenha: async (token: string, novaSenha: string): Promise<void> => {
+    await api.post('/auth/redefinir-senha', { token, novaSenha })
+  },
 }

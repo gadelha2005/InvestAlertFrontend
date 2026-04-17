@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LineChart, Plus, Search, TrendingUp, X } from "lucide-react";
 import { ativosApi } from "@/api/ativos";
 import { formatarMoeda } from "@/api/format";
@@ -38,6 +39,7 @@ const getTypeLabel = (type: "TODOS" | TipoAtivo) =>
   type === "TODOS" ? "Todos" : typeLabels[type];
 
 export default function Ativos() {
+  const navigate = useNavigate();
   const [ativos, setAtivos] = useState<AtivoResponse[]>([]);
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState<"TODOS" | TipoAtivo>(
@@ -283,7 +285,18 @@ export default function Ativos() {
         {ativosFiltrados.length > 0 ? (
           <section className="assets-page__list">
             {ativosFiltrados.map((ativo) => (
-              <article key={ativo.id} className="assets-card">
+              <article
+                key={ativo.id}
+                className="assets-card assets-card--clickable"
+                onClick={() => navigate(`/ativos/${ativo.ticker}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    navigate(`/ativos/${ativo.ticker}`);
+                  }
+                }}
+              >
                 <div className="assets-card__row">
                   <div className="assets-card__identity">
                     <div className="assets-card__ticker-box">

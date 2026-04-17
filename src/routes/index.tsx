@@ -2,8 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import Login from '@/pages/Login'
 import Cadastro from '@/pages/Cadastro'
+import EsqueciSenha from '@/pages/EsqueciSenha'
+import RedefinirSenha from '@/pages/RedefinirSenha'
 import Dashboard from '@/pages/Dashboard'
 import Ativos from '@/pages/Ativos'
+import AtivoDetalhe from '@/pages/Ativos/Detalhe'
 import Carteira from '@/pages/Carteira'
 import Alertas from '@/pages/Alertas'
 import Scanner from '@/pages/Scanner'
@@ -35,6 +38,8 @@ export default function AppRoutes() {
         <Route path="/cadastro" element={
           <PublicRoute><Cadastro /></PublicRoute>
         } />
+        <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+        <Route path="/redefinir-senha" element={<RedefinirSenha />} />
 
         {/* Rotas privadas */}
         <Route path="/dashboard" element={
@@ -42,6 +47,9 @@ export default function AppRoutes() {
         } />
         <Route path="/ativos" element={
           <PrivateRoute><Ativos /></PrivateRoute>
+        } />
+        <Route path="/ativos/:ticker" element={
+          <PrivateRoute><AtivoDetalhe /></PrivateRoute>
         } />
         <Route path="/carteira" element={
           <PrivateRoute><Carteira /></PrivateRoute>

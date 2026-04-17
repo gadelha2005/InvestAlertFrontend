@@ -175,6 +175,28 @@ export interface DashboardResponse {
   metas: MetaResponse[];
 }
 
+// ===== HISTORICO ATIVO =====
+export interface PontoHistorico {
+  dataHora: string
+  preco: number
+}
+
+export interface DiaResumo {
+  data: string
+  preco: number
+  variacaoPercentual?: number
+  volume?: number
+}
+
+export interface HistoricoAtivoResponse {
+  ticker: string
+  nome?: string
+  tipo: TipoAtivo
+  periodo: string
+  dados: PontoHistorico[]
+  ultimos7Dias: DiaResumo[]
+}
+
 // ===== ERRO =====
 export interface ErrorResponse {
   status: number;
